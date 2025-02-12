@@ -1,7 +1,7 @@
 import { BookDatasource, BookEntity, CreateBookDto, UpdateBookDto } from '../../domain';
 import Book from '../../data/mongo/models/book.model';
 import { Types } from 'mongoose';
-
+import ImageBook from '../../data/mongo/models/imageBook.model';
 
 export class BookDatasourceImpl implements BookDatasource {
 
@@ -9,7 +9,7 @@ export class BookDatasourceImpl implements BookDatasource {
         const book = await Book.create({
             title: createBookDto.title,
             author: createBookDto.author,
-            image: createBookDto.img,
+            img: createBookDto.img,
             star: createBookDto.star,
             contents: createBookDto.contents
         });
@@ -19,7 +19,25 @@ export class BookDatasourceImpl implements BookDatasource {
     async getAll(): Promise<BookEntity[]> {
         const books = await Book.find();
 
-        return books.map(book => BookEntity.fromObject(book.toObject()));
+        const booksWithImages = await Promise.all(
+            books.map(async book => {
+                let imageUrl = "http://localhost:3000/uploads/default.jpg"; // Imagen por defecto
+    
+                if (book.img) {
+                    const imageBook = await ImageBook.findById(book.img);
+                    if (imageBook) {
+                        imageUrl = `http://localhost:3000/uploads/${imageBook.routeFile}`;
+                    }
+                }
+    
+                return BookEntity.fromObject({
+                    ...book.toObject(),
+                    img: imageUrl // Ahora pasamos la URL correcta
+                });
+            })
+        );
+    
+        return booksWithImages;
     }
 
     async findById(id: string): Promise<BookEntity> {
@@ -29,6 +47,17 @@ export class BookDatasourceImpl implements BookDatasource {
             throw new Error('Book not found');
         }
         return BookEntity.fromObject(book.toObject());
+    }
+
+    async findByTitle(title: string): Promise<BookEntity[]> {
+        const books = await Book.find({title: {$regex:title, $options: 'i'} });
+
+        if(books.length === 0){
+            throw new Error('No books found');
+        }
+
+        // return BookEntity.fromObject(book.toObject());
+        return books.map(book => BookEntity.fromObject(book.toObject()));
     }
 
     async updateById(updateBookDto: UpdateBookDto): Promise<BookEntity> {
@@ -60,12 +89,12 @@ export class BookDatasourceImpl implements BookDatasource {
         console.log('Finding book with ID:', id);
         const book = await Book.findById(id).populate({
             path: 'contents',
+            model: 'ContentBook',
             populate: {
-                path: 'chapters'
+                path: 'chapters',
+                 model: 'ContentChapter'
             }
         });
-
-        console.log('Book with populated contents and chapters:', book);
 
         if (!book) {
             throw new Error('Book not found');

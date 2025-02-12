@@ -3,9 +3,8 @@ import { BookDatasource, BookEntity, BookRepository, CreateBookDto, UpdateBookDt
 export class BookRepositoryImpl implements BookRepository {
     constructor(
         private readonly datasource: BookDatasource
-    ){
-        
-    }
+    ){}
+
     updateById(updateBookDto: UpdateBookDto): Promise<BookEntity> {
         return this.datasource.updateById(updateBookDto);
     }
@@ -18,6 +17,11 @@ export class BookRepositoryImpl implements BookRepository {
     findById(id: string): Promise<BookEntity> {
         return this.datasource.findById(id);
     }
+
+    findByTitle(title: string): Promise<BookEntity[]> {
+        return this.datasource.findByTitle(title);
+    }
+    
     deleteById(id: string): Promise<BookEntity> {
         return this.datasource.deleteById(id);
     }

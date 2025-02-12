@@ -74,6 +74,23 @@ export class BooksController {
             });
     }
 
+    public getBookByTitle = (req: Request, res: Response) => {
+        const title = req.query.title as string;
+
+        if(!title) {
+            return res.status(400).json({ error: "Title query parameter is required"})
+        }
+        this.bookRepository.findByTitle(title)
+            .then(book => res.json(book))
+            .catch( error => {
+                if (error instanceof Error) {
+                    res.status(400).json({ error: error.message });
+                } else {
+                    res.status(400).json({ error: 'Unknown error' });
+                }
+            })
+    }
+
     public deleteBook = (req: Request, res: Response) => {
         const id = req.params.id;
         this.bookRepository.deleteById(id)

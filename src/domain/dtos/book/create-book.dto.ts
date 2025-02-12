@@ -22,9 +22,8 @@ export class CreateBookDto {
             console.error('Author is required');
             return ['Author is required', undefined];
         }
-        if (!img) {
-            console.error('Image URL is required');
-            return ['Image URL is required', undefined];
+        if (!img || (typeof img !== 'string' && typeof img !== 'object')) {
+            throw new Error('Invalid object properties: img');
         }
         if (typeof star !== 'number' || star < 0 || star > 5) {
             console.error('Star rating must be a number between 0 and 5');

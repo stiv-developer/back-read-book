@@ -2,10 +2,11 @@ import contentChapterModel from "../../data/mongo/models/contentChapter.model";
 import { ContentChapterDatasource } from "../../domain/datasources/contentChapter.datasource";
 import { ContentChapterEntity } from "../../domain/entities/contentChapter.entity";
 import  ContentChapter  from '../../data/mongo/models/contentChapter.model';
-
+import ContentBook from "../../data/mongo/models/contentBook.model";
+import { CreateContentChapterDto } from "../../domain";
 export class ContentChapterDatasourceImpl implements ContentChapterDatasource {
 
-    async create(contentChapter: any): Promise<ContentChapterEntity> {
+    async create(contentChapter: CreateContentChapterDto): Promise<ContentChapterEntity> {
         
         const contentChapterDoc = await contentChapterModel.create({
             type: contentChapter.type,
@@ -13,6 +14,11 @@ export class ContentChapterDatasourceImpl implements ContentChapterDatasource {
             position: contentChapter.position,
             contentBookId: contentChapter.contentBookId
         });
+        if(contentChapter.contentBookId){
+            await ContentBook.findByIdAndUpdate(contentChapter.contentBookId, {
+                $push: { chapters: contentChapterDoc._id}
+            });
+        }
 
         return ContentChapterEntity.fromObject(contentChapterDoc.toObject());
     }

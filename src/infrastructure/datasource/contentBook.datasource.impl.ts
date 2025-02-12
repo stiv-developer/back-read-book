@@ -2,7 +2,7 @@ import ContentBook from "../../data/mongo/models/contentBook.model";
 import { CreateContentBookDto, UpdateContentBookDto } from "../../domain";
 import { ContentBookDatasource } from "../../domain/datasources/contentBook.datasource";
 import { ContentBookEntity } from "../../domain/entities/contentBook.entity";
-
+import Book from '../../data/mongo/models/book.model';
 
 export class ContentBookDatasourceImpl implements ContentBookDatasource {
 
@@ -12,6 +12,15 @@ export class ContentBookDatasourceImpl implements ContentBookDatasource {
             position: contentBookDto.position,
             chapters: contentBookDto.chapters
         });
+        // return ContentBookEntity.fromObject(contentBookDoc.toObject());
+        // 2️⃣ Si se proporcionó un bookId, actualizar el Book para agregar el nuevo contenido
+        if (contentBookDto.bookId) {
+            await Book.findByIdAndUpdate(contentBookDto.bookId, {
+                $push: { contents: contentBookDoc._id } // ✅ Agregar el nuevo ContentBook al Book
+            });
+        }
+
+        // 3️⃣ Retornar la entidad transformada
         return ContentBookEntity.fromObject(contentBookDoc.toObject());
     }
     
@@ -21,7 +30,11 @@ export class ContentBookDatasourceImpl implements ContentBookDatasource {
     }
 
     async findById(id: string): Promise<ContentBookEntity> {
-        const contentBook = await ContentBook.findById(id);
+        // const contentBook = await ContentBook.findById(id);
+        const contentBook = await ContentBook.findById(id).populate({
+            path: 'chapters',
+            model: 'ContentChapter'
+        })
 
         if (!contentBook) {
             throw new Error('ContentBook not found');

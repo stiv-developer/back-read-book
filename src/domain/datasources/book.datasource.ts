@@ -9,6 +9,7 @@ export abstract class BookDatasource{
     abstract getAll(): Promise<BookEntity[]>;
     
     abstract findById(id: string): Promise<BookEntity>;
+    abstract findByTitle(title: string): Promise<BookEntity[]>;
     abstract updateById(updateBookDto: UpdateBookDto): Promise<BookEntity>;
     abstract deleteById(id: string): Promise<BookEntity>;
     abstract findByIdWithContent(id: string): Promise<any>;

@@ -15,7 +15,7 @@ export class BookRoutes{
         // Config routes
         router.get('/', bookController.getAllBooks);
         router.get('/:id', bookController.getBookById);
-
+        router.get('/title/search', bookController.getBookByTitle);
         router.get('/:id/content', bookController.getBookWithContentById);
         
         router.post('/', bookController.createBook);

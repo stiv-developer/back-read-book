@@ -1,6 +1,6 @@
 import express, { Router } from 'express';
 import compression from 'compression';
-
+import cors from 'cors';
 
 interface Options {
     port: number;
@@ -22,6 +22,15 @@ export class Server {
     async start() {
 
         //* Routes
+        this.app.use(cors({
+            origin: 'http://localhost:4200',
+        }))
+
+        this.app.use('/uploads', express.static('D:/uploads', {
+            fallthrough: false
+        }));
+        
+
         this.app.use(compression());
         this.app.use(express.json()); // Middleware para parsear JSON
         this.app.use(this.routes);
