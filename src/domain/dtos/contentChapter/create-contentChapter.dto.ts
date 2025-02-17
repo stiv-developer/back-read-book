@@ -1,7 +1,6 @@
 
 export class CreateContentChapterDto{
     private constructor(
-        public readonly type: string,
         public readonly description: string,
         public readonly position: number,
         public readonly contentBookId: string
@@ -9,11 +8,8 @@ export class CreateContentChapterDto{
 
     static create(props: { [key: string]: any }): [string?, CreateContentChapterDto?] {
         console.log('Received props:', props);
-        const { type, description, position, contentBookId} = props;
-
-        if (!type) {
-            return ['Type is required', undefined];
-        }
+        const { description, position, contentBookId} = props;
+        
         if (!description) {
             return ['Description is required', undefined];
         }
@@ -25,6 +21,6 @@ export class CreateContentChapterDto{
             return ['Invalid contentBookId', undefined]; // ✅ Validar que bookId sea string si se proporciona
         }
 
-        return [undefined, new CreateContentChapterDto(type, description, position, contentBookId)];
+        return [undefined, new CreateContentChapterDto( description, position, contentBookId)];
     }
 }

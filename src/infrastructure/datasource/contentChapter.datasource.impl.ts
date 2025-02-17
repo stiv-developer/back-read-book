@@ -9,7 +9,6 @@ export class ContentChapterDatasourceImpl implements ContentChapterDatasource {
     async create(contentChapter: CreateContentChapterDto): Promise<ContentChapterEntity> {
         
         const contentChapterDoc = await contentChapterModel.create({
-            type: contentChapter.type,
             description: contentChapter.description,
             position: contentChapter.position,
             contentBookId: contentChapter.contentBookId
@@ -41,7 +40,6 @@ export class ContentChapterDatasourceImpl implements ContentChapterDatasource {
         const contentChapterDoc = await ContentChapter.findByIdAndUpdate(
             contentChapter.id,
             {
-                type: contentChapter.type,
                 description: contentChapter.description,
                 position: contentChapter.position
             }, { new: true });
