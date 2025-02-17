@@ -28,10 +28,27 @@ export class UpdateBookDto{
             return ['ID is required', undefined];
         }
 
-        if (!title && !author && !img && !star) {
-            console.error('At least one field is required');
+        if (!title) {
+            console.error('Title field is required');
             return ['At least one field is required', undefined];
         }
+
+        if (!author ) {
+            console.error('Author field is required');
+            return ['At least one field is required', undefined];
+        }
+
+        if (!img) {
+            console.error('img field is required');
+            return ['At least one field is required', undefined];
+        }
+
+        if (!star) {
+            console.error('Star field is required');
+            return ['At least one field is required', undefined];
+        }
+
+
         return [undefined, new UpdateBookDto(id, title, author, img, star)];
     }
 }

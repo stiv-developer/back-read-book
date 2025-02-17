@@ -7,14 +7,13 @@ import { BookEntity } from "../../domain/entities/book.entity";
 export class BooksController {
 
     constructor(
-       private readonly bookRepository: BookRepository
+        private readonly bookRepository: BookRepository
     ) { }
 
     public createBook = (req: Request, res: Response) => {
-        console.log('Request body:', req.body); // Agrega este log
-        
+
         const [error, createBookDto] = CreateBookDto.create(req.body);
-        
+
         if (error) {
             console.error('Error in CreateBookDto.create:', error); // Agrega este log
             return res.status(400).json({ error });
@@ -34,13 +33,13 @@ export class BooksController {
     }
 
     public updateBook = (req: Request, res: Response) => {
-    
-        const id = req.params.id;
-        console.log('id',id)
-        const [error, updateBookDto] = UpdateBookDto.create({ ...req.body, id });
-        
-        if (error) return res.status(400).json({ error });
+        console.log("Archivo recibido: ", req.file);
 
+        const id = req.params.id;
+        const [error, updateBookDto] = UpdateBookDto.create({ ...req.body, id });
+    
+        if (error) return res.status(400).json({ error });
+    
         new UpdateBook(this.bookRepository)
             .execute(updateBookDto!)
             .then(book => res.json(book))
@@ -77,12 +76,12 @@ export class BooksController {
     public getBookByTitle = (req: Request, res: Response) => {
         const title = req.query.title as string;
 
-        if(!title) {
-            return res.status(400).json({ error: "Title query parameter is required"})
+        if (!title) {
+            return res.status(400).json({ error: "Title query parameter is required" })
         }
         this.bookRepository.findByTitle(title)
             .then(book => res.json(book))
-            .catch( error => {
+            .catch(error => {
                 if (error instanceof Error) {
                     res.status(400).json({ error: error.message });
                 } else {
@@ -101,23 +100,9 @@ export class BooksController {
             });
     }
 
-    // public getBookWithContentById = async (req: Request, res: Response) => {
-    //     try {
-    //         const book = await this.bookRepository.findByIdWithContent(req.params.id);
-    //         const bookEntity = BookEntity.fromObject(book);
-    //         res.json(bookEntity);
-    //     } catch (error) {
-    //         if (error instanceof Error) {
-    //             res.status(404).json({ error: error.message });
-    //         } else {
-    //             res.status(404).json({ error: 'Unknown error' });
-    //         }
-    //     }
-    // }
-
     public getBookWithContentById = (req: Request, res: Response) => {
         const id = req.params.id;
-    
+
         this.bookRepository.findByIdWithContent(id) // Suponiendo que `findByIdWithContent` es un método que maneja el populate
             .then(book => res.json(book))
             .catch(error => {

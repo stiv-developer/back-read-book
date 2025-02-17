@@ -1,43 +1,26 @@
 import { BookDatasource, BookEntity, CreateBookDto, UpdateBookDto } from '../../domain';
 import Book from '../../data/mongo/models/book.model';
-import { Types } from 'mongoose';
 import ImageBook from '../../data/mongo/models/imageBook.model';
 
 export class BookDatasourceImpl implements BookDatasource {
 
     async create(createBookDto: CreateBookDto): Promise<BookEntity> {
+
         const book = await Book.create({
             title: createBookDto.title,
             author: createBookDto.author,
-            img: createBookDto.img,
+            img: createBookDto.img, // Guardar la URL de la imagen subida
             star: createBookDto.star,
             contents: createBookDto.contents
         });
+
         return BookEntity.fromObject(book.toObject());
     }
 
     async getAll(): Promise<BookEntity[]> {
         const books = await Book.find();
-
-        const booksWithImages = await Promise.all(
-            books.map(async book => {
-                let imageUrl = "http://localhost:3000/uploads/default.jpg"; // Imagen por defecto
-    
-                if (book.img) {
-                    const imageBook = await ImageBook.findById(book.img);
-                    if (imageBook) {
-                        imageUrl = `http://localhost:3000/uploads/${imageBook.routeFile}`;
-                    }
-                }
-    
-                return BookEntity.fromObject({
-                    ...book.toObject(),
-                    img: imageUrl // Ahora pasamos la URL correcta
-                });
-            })
-        );
-    
-        return booksWithImages;
+        
+        return books.map(books => BookEntity.fromObject(books.toObject()));
     }
 
     async findById(id: string): Promise<BookEntity> {
@@ -50,9 +33,9 @@ export class BookDatasourceImpl implements BookDatasource {
     }
 
     async findByTitle(title: string): Promise<BookEntity[]> {
-        const books = await Book.find({title: {$regex:title, $options: 'i'} });
+        const books = await Book.find({ title: { $regex: title, $options: 'i' } });
 
-        if(books.length === 0){
+        if (books.length === 0) {
             throw new Error('No books found');
         }
 
@@ -61,20 +44,20 @@ export class BookDatasourceImpl implements BookDatasource {
     }
 
     async updateById(updateBookDto: UpdateBookDto): Promise<BookEntity> {
-
-        const book = await Book.findByIdAndUpdate(
+        const bookDoc = await Book.findByIdAndUpdate(
             updateBookDto.id,
             {
                 title: updateBookDto.title,
                 author: updateBookDto.author,
-                image: updateBookDto.img,
-                star: updateBookDto.star,
-            }, { new: true });
+                img: updateBookDto.img,
+                star: updateBookDto.star
+            }, {new: true });
 
-        if (!book) {
-            throw new Error('Book not found');
-        }
-        return BookEntity.fromObject(book.toObject());
+            if(!bookDoc) {
+                throw new Error('Book not found');
+            }
+
+        return BookEntity.fromObject(bookDoc.toObject());
     }
 
     async deleteById(id: string): Promise<BookEntity> {
@@ -92,7 +75,7 @@ export class BookDatasourceImpl implements BookDatasource {
             model: 'ContentBook',
             populate: {
                 path: 'chapters',
-                 model: 'ContentChapter'
+                model: 'ContentChapter'
             }
         });
 

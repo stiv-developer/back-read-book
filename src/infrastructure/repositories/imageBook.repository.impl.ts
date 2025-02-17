@@ -11,16 +11,24 @@ export class ImageBookRepositoryImpl implements ImageBookRepository{
         private readonly datasource: ImageBookDatasource
     ){}
 
+    getAll(): Promise<ImageBookEntity[]> {
+        return this.datasource.getAll();
+    }
+    
     findById(id: any): Promise<ImageBookEntity> {
         return this.datasource.findById(id);
     }
-
+    
     create(createImageBookDto: CreateImageBookDto): Promise<ImageBookEntity> {
         return this.datasource.create(createImageBookDto);
     }
-
+    
     updateById(updateImageBookDto: UpdateImageBookDto): Promise<ImageBookEntity> {
         return this.datasource.update(updateImageBookDto)
     }
     
+    deleteById(id: string): Promise<ImageBookEntity> {
+        return this.datasource.deleteById(id);
+    }
+
 }

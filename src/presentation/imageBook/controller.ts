@@ -11,6 +11,19 @@ export class ImageBookController {
         private readonly imageBookRepository: ImageBookRepository
     ) { }
 
+    public getAllImageBooks = (req: Request , res:Response) => {
+        this.imageBookRepository.getAll()
+        .then(imageBooks => res.json(imageBooks))
+        .catch(error => {
+            console.error('Error getting all image books:', error); // Agrega este log
+                if (error instanceof Error) {
+                    res.status(400).json({ error: error.message });
+                } else {
+                    res.status(400).json({ error: 'Unknown error' });
+                }
+        })
+    }
+
     public createImageBook = (req: Request, res: Response) => {
 
         if (!req.file) {
@@ -59,5 +72,16 @@ export class ImageBookController {
                 console.log('Error getting image book by ID: ', error);
                 res.status(400).json({ error: error.message || 'Unknown error' });
             });
+    }
+
+    public deleteById = (req: Request, res: Response) => {
+        const id = req.params.id;
+
+        this.imageBookRepository.deleteById(id)
+            .then(imageBook => res.json(imageBook))
+            .catch( error =>{
+                console.error('Error deleting imageBook:', error); // Agrega este log
+                res.status(400).json({ error: error.message || 'Unknown error' });
+            })
     }
 }

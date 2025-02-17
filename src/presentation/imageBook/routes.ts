@@ -15,8 +15,10 @@ export class ImageBookRoutes {
 
         // Config routes
         router.get('/:id', imageBookController.getImageBookById);
+        router.get('/', imageBookController.getAllImageBooks);
         router.post('/', upload.single('image'), imageBookController.createImageBook);
         router.put('/:id', imageBookController.updateImageBook);
+        router.delete('/:id', imageBookController.deleteById);
 
         return router;
     }

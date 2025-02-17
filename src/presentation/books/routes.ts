@@ -2,6 +2,7 @@ import { Router } from "express";
 import { BooksController } from "./controller";
 import { BookDatasourceImpl } from "../../infrastructure/datasource/book.datasource.imp";
 import { BookRepositoryImpl } from "../../infrastructure/repositories/book.repository.impl";
+import { upload } from "../../config/multer.config";
 
 export class BookRoutes{
     static get routes():Router{
