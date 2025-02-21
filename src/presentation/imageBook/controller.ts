@@ -32,8 +32,6 @@ export class ImageBookController {
     
         console.log('Uploaded file:', req.file);
     
-        const imagePath = `D:/uploads/${req.file.filename}`;
-    
         const [error, createImageBookDto] = CreateImageBookDto.create({
             nameFile: req.file.originalname,
             routeFile: req.file.filename,

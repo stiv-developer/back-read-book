@@ -1,5 +1,3 @@
-import { CreateContentBookDto } from "../contentBook/create-contentBook.dto";
-
 export class CreateBookDto {
 
     private constructor(
